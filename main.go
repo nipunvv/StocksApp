@@ -7,6 +7,7 @@ import (
 	_ "github.com/lib/pq"
 	"strings"
 	"log"
+	"os"
 )
 
 type Company struct {
@@ -34,6 +35,15 @@ func init() {
 }
 
 func apiFunc(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/plain")
+	f, err := os.OpenFile("log", os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
+	if err != nil {
+	    log.Fatalf("error opening file: %v", err)
+	}
+	defer f.Close()
+
+	log.SetOutput(f)
+
 	if r.Method == "GET" {
 		countrycode := r.FormValue("countrycode")
 		category := r.FormValue("Category")
@@ -45,6 +55,7 @@ func apiFunc(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var cid string
+		var count int
 
 		rows, err := db.Query("SELECT CompanyID FROM stocks WHERE string_to_array(countries,',') && array[$1] AND string_to_array(category,',') && array[$2]", countrycode, category)
 		if err != nil {
@@ -53,6 +64,7 @@ func apiFunc(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		count = 0
 		for rows.Next() {
 			err := rows.Scan(&cid)
 			if err != nil {
@@ -60,11 +72,19 @@ func apiFunc(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			log.Println(cid)
+			count++
 		}
+
+		if count == 0 {
+			log.Println("{C1, Failed},{C2,Failed},{C3,Failed}")
+			w.Write([]byte("No Companies Passed from Targeting"))
+			return
+		}
+
 		
 
+		
 
-		w.Header().Set("Content-Type", "text/plain")
 		w.Write([]byte("C1"))
 	}
 }
