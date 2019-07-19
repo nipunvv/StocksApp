@@ -1,1 +1,6 @@
-2019/07/16 23:46:15 {C1, Failed},{C2,Failed},{C3,Failed}
+2019/07/19 22:47:27 BaseTargeting: {C1, Failed},{C2, Passed},{C3, Failed}
+2019/07/19 22:47:27 BudgetCheck: {C1, Failed},{C2, Passed},{C3, Failed}
+2019/07/19 22:47:27 BaseBid: {C1, Failed},{C2, Passed},{C3, Failed}
+2019/07/19 22:48:17 BaseTargeting: {C1, Failed},{C2, Passed},{C3, Failed}
+2019/07/19 22:48:17 BudgetCheck: {C1, Failed},{C2, Passed},{C3, Failed}
+2019/07/19 22:48:17 {C1, Failed},{C2, Failed},{C3, Failed}
