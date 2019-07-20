@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"fmt"
 )
 
 type Company struct {
@@ -88,8 +89,10 @@ func apiFunc(w http.ResponseWriter, r *http.Request) {
 			winner = chooseWinner(bid_passed_companies)
 		}
 
-
 		w.Write([]byte(winner))
+
+
+		reduceBudget(winner, basebid)
 	}
 }
 
@@ -142,8 +145,27 @@ func doBidCheck(passed_companies []string, basebid string) []string {
 
 // choose winner
 func chooseWinner(passed_companies []string) string {
-	
+	var winner string
+	sql := fmt.Sprintf(`SELECT companyid FROM stocks WHERE companyid IN('%s') ORDER BY budget DESC LIMIT 1`, strings.Join(passed_companies, "','"))
+    row := db.QueryRow(sql)
+    err := row.Scan(&winner)
+    if err != nil {
+    	panic(err)
+    }
+    return winner
 }
+
+
+// reduce budget
+func reduceBudget(winner string, basebid string) {
+	bid, er := strconv.Atoi(basebid)
+	if er == nil {
+		_, err := db.Exec("UPDATE stocks SET budget=budget-$1 WHERE companyid=$2", bid, winner)
+		if err != nil {
+			panic(err)
+		}
+	}
+} 
 
 // create log
 func createLog(passed_companies []string) string {
