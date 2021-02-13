@@ -1,0 +1,3 @@
+# StocksApp
+
+Sample Golang app
